@@ -13,6 +13,10 @@ Get-Content .env | ForEach-Object {
     }
 }
 
+# Read commands from .env
+$commands = [System.Environment]::GetEnvironmentVariable('COMMANDS') -split ","
+
+
 # Function to fetch current song from VLC
 Function Get-CurrentlyPlayingVLC {
     try {
@@ -49,7 +53,7 @@ $writer.Flush()
 # Initialize last command time
 $lastCommandTime = Get-Date -Date "01/01/1970 00:00:00"
 
-# Main loop to read chat and respond to !np
+# Main loop to read chat and respond to commands
 while($true) {
     $readData = $reader.ReadLine()
     Write-Host "Received: $readData"  # Debug statement
@@ -59,25 +63,28 @@ while($true) {
         $writer.Flush()
     }
 
-    if ($readData -match ":.*?!np") {
-        $currentTime = Get-Date
-        $timeSinceLastCommand = $currentTime - $lastCommandTime
+    foreach ($cmd in $commands) {
+        if ($readData -match ":.*?$cmd") {
+            $currentTime = Get-Date
+            $timeSinceLastCommand = $currentTime - $lastCommandTime
 
-        if ($timeSinceLastCommand.TotalSeconds -ge 30) {
-            $currentSong = Get-CurrentlyPlayingVLC
-            if ($null -ne $currentSong) {
-                $response = "PRIVMSG #$channel :Now Playing: $currentSong"
-                $writer.WriteLine($response)
-                $writer.Flush()
+            if ($timeSinceLastCommand.TotalSeconds -ge 30) {
+                $currentSong = Get-CurrentlyPlayingVLC
+                if ($null -ne $currentSong) {
+                    $response = "PRIVMSG #$channel :Now Playing: $currentSong"
+                    $writer.WriteLine($response)
+                    $writer.Flush()
+                    
+                    # Update last command time
+                    $lastCommandTime = $currentTime
+                } else {
+                    Write-Host "Couldn't fetch current song from VLC"  # Debug statement
+                }
                 
-                # Update last command time
-                $lastCommandTime = $currentTime
             } else {
-                Write-Host "Couldn't fetch current song from VLC"  # Debug statement
+                Write-Host "Cooldown in effect. Skipping command."  # Debug statement
             }
-            
-        } else {
-            Write-Host "Cooldown in effect. Skipping command."  # Debug statement
+            break
         }
     }
 }
