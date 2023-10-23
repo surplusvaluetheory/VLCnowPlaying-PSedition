@@ -15,7 +15,7 @@ This project contains a PowerShell script `vlcnowplaying.ps1` that connects to
 1. Open VLC, go to `Tools -> Preferences`.
 2. Select `All` under `Show settings`.
 3. From the left panel, navigate to `Interface -> Main interfaces` and check the `Web` box.
-4. Go to `Interface -> Main interfaces -> Lua` and set a password under `Lua HTTP`. Note down this password as you'll need it in the Python script.
+4. Go to `Interface -> Main interfaces -> Lua` and set a password under `Lua HTTP`. Note down this password as you'll need it in the PowerShell script.
 5. Save your changes and restart VLC.
 
 ### Get your oauth token to authenticate to chat
