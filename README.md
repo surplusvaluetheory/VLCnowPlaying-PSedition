@@ -1,6 +1,6 @@
 # VLC Now Playing to Twitch Script
 
-This project contains a PowerShell script `vlcnowplaying.ps1` that connects to a Twitch chat and displays currently playing titles from Plex Media Server upon command.
+This project contains a PowerShell script `vlcnowplaying.ps1` that connects to a Twitch chat and displays currently playing titles from VLC upon command.
 
 ## Requirements
 
@@ -30,8 +30,8 @@ This project contains a PowerShell script `vlcnowplaying.ps1` that connects to
 3. Update the variables with the relevant information:
 
 ```
-# Password for the VLC web interface
-VLC_PASSWORD=yourVLCpassw0rd
+# Password for the  web interface
+_PASSWORD=yourpassw0rd
 
 # Your Twitch username
 TWITCH_USERNAME=yourtwitchusername
@@ -45,7 +45,7 @@ TWITCH_CHANNEL=yourtwitchchannel
 # Cooldown time in seconds for the commands
 COMMAND_COOLDOWN=30
 
-# Commands that trigger the bot to send the currently playing title in VLC.
+# Commands that trigger the bot to send the currently playing title in .
 # Separate multiple commands with commas.
 COMMANDS=!np,!nowplaying,!current
 
@@ -70,10 +70,10 @@ Set-ExecutionPolicy -Scope CurrentUser remotesigned
 After updating the `.env` file and setting the execution policy, run the PowerShell script.
 
 ```
-vlcnowplaying.ps1
+nowplaying.ps1
 ```
 
-Your bot should now be running, and it will display currently playing VLC title or filename in the Twitch chat when triggered by the `!np` command (or whichever commands you've specified in the .env file.
+Your bot should now be running, and it will display currently playing  title or filename in the Twitch chat when triggered by the `!np` command (or whichever commands you've specified in the .env file.
 
 
 
