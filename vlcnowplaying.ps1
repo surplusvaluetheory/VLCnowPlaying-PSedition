@@ -17,15 +17,30 @@ Get-Content .env | ForEach-Object {
 $commands = [System.Environment]::GetEnvironmentVariable('COMMANDS') -split ","
 
 
-# Function to fetch current song from VLC
+# Function to fetch current song and time information from VLC
 Function Get-CurrentlyPlayingVLC {
     try {
         $VlcPassword = [System.Environment]::GetEnvironmentVariable('VLC_PASSWORD')
         $response = Invoke-RestMethod -Uri "http://localhost:8080/requests/status.json" -Headers @{Authorization=("Basic {0}" -f [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes((":{0}" -f $VlcPassword))))}
-        return $response.information.category.meta.filename
+        
+        $timeInSeconds = $response.time
+        $lengthInSeconds = $response.length
+
+        # Convert time to hh:mm:ss format
+        $time = [TimeSpan]::FromSeconds($timeInSeconds)
+        $length = [TimeSpan]::FromSeconds($lengthInSeconds)
+
+        $timeStr = "{0:D2}:{1:D2}" -f $time.Minutes, $time.Seconds
+        $lengthStr = "{0:D2}:{1:D2}" -f $length.Minutes, $length.Seconds
+
+        # Include hours if greater than 0
+        if ($time.Hours -gt 0) { $timeStr = "{0:D2}:{1}" -f $time.Hours, $timeStr }
+        if ($length.Hours -gt 0) { $lengthStr = "{0:D2}:{1}" -f $length.Hours, $lengthStr }
+
+        return $response.information.category.meta.filename, $timeStr, $lengthStr
     } catch {
         Write-Host "Error while fetching VLC status: $_"
-        return $null
+        return $null, $null, $null
     }
 }
 
@@ -69,18 +84,18 @@ while($true) {
             $timeSinceLastCommand = $currentTime - $lastCommandTime
 
             if ($timeSinceLastCommand.TotalSeconds -ge 30) {
-                $currentSong = Get-CurrentlyPlayingVLC
-                if ($null -ne $currentSong) {
-                    $response = "PRIVMSG #$channel :Now Playing: $currentSong"
+                $currentSong, $time, $length = Get-CurrentlyPlayingVLC
+                if ($null -ne $currentSong -and $null -ne $time -and $null -ne $length) {
+                    $response = "PRIVMSG #$channel :Now Playing: $currentSong $time/$length"
                     $writer.WriteLine($response)
                     $writer.Flush()
-                    
+
                     # Update last command time
                     $lastCommandTime = $currentTime
                 } else {
-                    Write-Host "Couldn't fetch current song from VLC"  # Debug statement
+                    Write-Host "Couldn't fetch current song or time from VLC"  # Debug statement
                 }
-                
+
             } else {
                 Write-Host "Cooldown in effect. Skipping command."  # Debug statement
             }
