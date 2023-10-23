@@ -70,7 +70,7 @@ Set-ExecutionPolicy -Scope CurrentUser remotesigned
 After updating the `.env` file and setting the execution policy, run the PowerShell script.
 
 ```
-nowplaying.ps1
+.\vlcnowplaying.ps1
 ```
 
 Your bot should now be running, and it will display currently playing  title or filename in the Twitch chat when triggered by the `!np` command (or whichever commands you've specified in the .env file.
