@@ -31,7 +31,7 @@ This project contains a PowerShell script `vlcnowplaying.ps1` that connects to
 
 ```
 # Password for the  web interface
-_PASSWORD=yourpassw0rd
+VLC_PASSWORD=yourpassw0rd
 
 # Your Twitch username
 TWITCH_USERNAME=yourtwitchusername
